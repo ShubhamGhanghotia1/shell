@@ -960,112 +960,136 @@ class CustomShell(cmd.Cmd):
     def do_git(self, arg):
         """Run Git commands."""
         try:
-            # Split the user's input into command and arguments
-            args = arg.split()
-            if not args:
-                print("Usage: git <command> [args]")
-                return
-
-            # Use subprocess to run the Git command
-            result = subprocess.run(['git'] + args, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-            if result.returncode == 0:
-                print(result.stdout)
-            else:
-                print(f"Error: {result.stderr.strip()}")
-        except Exception as e:
-            print(f"Error: {e}")
-
-    def do_git_pull(self, arg):
-        """Git pull command: pull changes from a remote repository."""
-        try:
             args = shlex.split(arg)
-            
-            # Check if the user provides the necessary arguments
-            if len(args) != 2:
-                print("Usage: git pull <remote> <branch>")
-                return
-            
-            remote = args[0]
-            branch = args[1]
-            
-            # Execute the git pull command
-            result = subprocess.run(['git', 'pull', remote, branch], text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            
-            if result.returncode == 0:
-                print("Git pull successful:")
-                print(result.stdout)
+            git_command = args[0]
+
+            if git_command == 'init':
+                # Initialize a new Git repository
+                subprocess.run(['git', 'init'], text=True)
+                print("Initialized empty Git repository.")
+            elif git_command == 'clone':
+                # Clone a remote Git repository
+                if len(args) != 2:
+                    print("Usage: git clone <repository>")
+                    return
+                repository = args[1]
+                subprocess.run(['git', 'clone', repository], text=True)
+                print(f"Cloned repository: {repository}")
+            elif git_command == 'add':
+                # Stage a file for commit
+                if len(args) != 2:
+                    print("Usage: git add <file>")
+                    return
+                file_to_add = args[1]
+                subprocess.run(['git', 'add', file_to_add], text=True)
+                print(f"Staged '{file_to_add}' for commit.")
+            elif git_command == 'commit':
+                # Commit staged changes
+                if len(args) != 2:
+                    print("Usage: git commit -m '<message>'")
+                    return
+                commit_message = args[1]
+                subprocess.run(['git', 'commit', '-m', commit_message], text=True)
+                print(f"Committed changes with message: '{commit_message}'")
+            elif git_command == 'status':
+                # Show Git repository status
+                subprocess.run(['git', 'status'], text=True)
+            elif git_command == 'push':
+                # Push changes to a remote repository
+                if len(args) != 3:
+                    print("Usage: git push <remote> <branch>")
+                    return
+                remote = args[1]
+                branch = args[2]
+                subprocess.run(['git', 'push', remote, branch], text=True)
+                print(f"Pushed to remote '{remote}' branch '{branch}'.")
+            elif git_command == 'pull':
+                # Pull changes from a remote repository
+                if len(args) != 3:
+                    print("Usage: git pull <remote> <branch>")
+                    return
+                remote = args[1]
+                branch = args[2]
+                subprocess.run(['git', 'pull', remote, branch], text=True)
+                print(f"Pulled from remote '{remote}' branch '{branch}'.")
+            elif git_command == 'remote':
+                # Show remote repositories
+                subprocess.run(['git', 'remote', '-v'], text=True)
+            elif git_command == 'log':
+                # Show Git commit log
+                subprocess.run(['git', 'log'], text=True)
+            elif git_command == 'diff':
+                # Show Git diff
+                subprocess.run(['git', 'diff'], text=True)
+            elif git_command == 'checkout':
+                # Checkout a branch or commit
+                if len(args) != 2:
+                    print("Usage: git checkout <branch/commit>")
+                    return
+                target = args[1]
+                subprocess.run(['git', 'checkout', target], text=True)
+                print(f"Checked out: {target}")
+            elif git_command == 'branch':
+                # List Git branches
+                subprocess.run(['git', 'branch'], text=True)
+            elif git_command == 'merge':
+                # Merge changes from one branch into the current branch
+                if len(args) != 2:
+                    print("Usage: git merge <branch>")
+                    return
+                branch_to_merge = args[1]
+                subprocess.run(['git', 'merge', branch_to_merge], text=True)
+                print(f"Merged changes from '{branch_to_merge}' into the current branch.")
+            elif git_command == 'stash':
+                # Stash changes
+                subprocess.run(['git', 'stash'], text=True)
+                print("Stashed changes.")
+            elif git_command == 'pop':
+                # Apply stashed changes
+                subprocess.run(['git', 'stash', 'pop'], text=True)
+                print("Applied stashed changes.")
+            elif git_command == 'cherry-pick':
+                # Cherry-pick a commit
+                if len(args) != 2:
+                    print("Usage: git cherry-pick <commit>")
+                    return
+                commit_to_pick = args[1]
+                subprocess.run(['git', 'cherry-pick', commit_to_pick], text=True)
+                print(f"Cherry-picked commit: {commit_to_pick}")
+            elif git_command == 'clean':
+                # Clean untracked files
+                subprocess.run(['git', 'clean', '-f'], text=True)
+                print("Cleaned untracked files.")
+            elif git_command == 'fetch':
+                # Fetch changes from a remote repository
+                if len(args) != 3:
+                    print("Usage: git fetch <remote> <branch>")
+                    return
+                remote = args[1]
+                branch = args[2]
+                subprocess.run(['git', 'fetch', remote, branch], text=True)
+                print(f"Fetched from remote '{remote}' branch '{branch}'.")
+            elif git_command == 'reset':
+                # Reset the HEAD to a specific commit
+                if len(args) != 2:
+                    print("Usage: git reset <commit>")
+                    return
+                commit_to_reset = args[1]
+                subprocess.run(['git', 'reset', commit_to_reset], text=True)
+                print(f"Reset to commit: {commit_to_reset}")
+            elif git_command == 'revert':
+                # Revert a commit
+                if len(args) != 2:
+                    print("Usage: git revert <commit>")
+                    return
+                commit_to_revert = args[1]
+                subprocess.run(['git', 'revert', commit_to_revert], text=True)
+                print(f"Reverted commit: {commit_to_revert}")
             else:
-                print(f"Error: {result.stderr.strip()}")
+                print("Invalid git command. Supported commands: init, clone, add, commit, status, push, pull, remote, log, diff, checkout, branch, merge, stash, pop, cherry-pick, clean, fetch, reset, revert")
         except Exception as e:
             print(f"Error: {e}")
 
-    def do_git_commit(self, arg):
-        """Git commit command: commit changes to the local repository."""
-        try:
-            args = shlex.split(arg)
-            
-            # Check if the user provides a commit message
-            if len(args) < 2:
-                print("Usage: git commit -m 'commit message'")
-                return
-            
-            # Check if the first argument is '-m' for the commit message
-            if args[0] != '-m':
-                print("Usage: git commit -m 'commit message'")
-                return
-            
-            commit_message = args[1]
-            
-            # Execute the git commit command
-            result = subprocess.run(['git', 'commit', '-m', commit_message], text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            
-            if result.returncode == 0:
-                print("Git commit successful:")
-                print(result.stdout)
-            else:
-                print(f"Error: {result.stderr.strip()}")
-        except Exception as e:
-            print(f"Error: {e}")
-
-    def do_git_clone(self, arg):
-        """Git clone command: clone a repository into a new directory."""
-        try:
-            args = shlex.split(arg)
-            if len(args) != 2:
-                print("Usage: git_clone <repository_url> <destination_directory>")
-                return
-            
-            repository_url, destination_directory = args
-            result = subprocess.run(['git', 'clone', repository_url, destination_directory], text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            
-            if result.returncode == 0:
-                print(f"Cloned repository to '{destination_directory}'.")
-            else:
-                print(f"Error: {result.stderr.strip()}")
-        except Exception as e:
-            print(f"Error: {e}")
-    def do_git_push(self, arg):
-        """Git push command: push changes to a remote repository."""
-        try:
-            result = subprocess.run(['git', 'push'] + shlex.split(arg), text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            if result.returncode == 0:
-                print(result.stdout)
-            else:
-                print(f"Error: {result.stderr.strip()}")
-        except Exception as e:
-            print(f"Error: {e}")
-
-    def do_git_remote(self, arg):
-        """Git remote command: manage remote repositories."""
-        try:
-            result = subprocess.run(['git', 'remote'] + shlex.split(arg), text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            if result.returncode == 0:
-                print(result.stdout)
-            else:
-                print(f"Error: {result.stderr.strip()}")
-        except Exception as e:
-            print(f"Error: {e}")
 
  
 
